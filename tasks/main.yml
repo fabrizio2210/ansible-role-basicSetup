@@ -1,0 +1,55 @@
+---
+- name: utente pi
+  user:
+    name: pi
+    password: "{{ password }}"
+
+- name: Imposto hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Imposto timezone
+  timezone:
+      name: Europe/Rome
+
+- name: Crea custom fact directory
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+
+- name: Inserisco custom fact
+  copy:
+    src: files/custom.fact
+    dest: /etc/ansible/facts.d/custom.fact
+    mode: 0755
+
+- name: Re-run setup to use custom facts
+  setup: filter=ansible_local
+
+#TODO la chiave andrebbe ricavata dai facts del banana
+- name: Inserisci chiave ssh per fare backup
+  authorized_key: 
+    user: root
+    state: present
+    key: "{{ lookup('file', 'id_ssh_backup') }}"
+  when:  backupKey  == True
+
+- name: Disabilito IPv6
+  copy:
+    src: files/50-noipv6.conf
+    dest: /etc/sysctl.d/50-noipv6.conf
+    mode: 0644
+  notify: reload network
+
+- name: Creazione mountpoint per disco
+  file: path=/mnt/HDD state=directory
+
+- name: Mount del disco
+  mount:
+    path: /mnt/HDD
+    src: UUID={{ UUID_disk }}
+    fstype: ext4
+    opts: defaults,nofail
+    state: mounted
+  when: UUID_disk is defined
+
