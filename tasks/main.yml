@@ -3,6 +3,7 @@
   user:
     name: pi
     password: "{{ password }}"
+  when: password is defined
 
 - name: Imposto hostname
   hostname:
