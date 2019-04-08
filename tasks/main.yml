@@ -11,7 +11,7 @@
 
 - name: Imposto timezone
   timezone:
-      name: Europe/Rome
+      name: CET
 
 - name: Crea custom fact directory
   file:
