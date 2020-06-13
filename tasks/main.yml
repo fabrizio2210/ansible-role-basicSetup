@@ -35,6 +35,15 @@
     key: "{{ lookup('file', 'id_ssh_backup') }}"
   when:  backupKey  == True
 
+- name: Inserisci chiave ssh per fare deploy
+  authorized_key: 
+    user: root
+    state: present
+    key: "{{ lookup('file', 'id_ssh_jenkins') }}"
+  when:  
+    - jenkinsKey is defined 
+    - jenkinsKey == True
+
 - name: Disabilito IPv6
   copy:
     src: files/50-noipv6.conf
