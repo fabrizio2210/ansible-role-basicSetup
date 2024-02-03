@@ -6,3 +6,5 @@
   - sysctl -p
   - systemctl restart networking
 
+- name: reload systemd
+  command: /bin/systemctl daemon-reload

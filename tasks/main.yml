@@ -63,3 +63,11 @@
     state: mounted
   when: UUID_disk is defined
 
+- name: Enable systemd watchdog
+  ini_file:
+    path: /etc/systemd/system.conf
+    section: Manager
+    option: RuntimeWatchdogSec
+    value: "15"
+    backup: yes
+  notify: reload systemd
