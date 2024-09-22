@@ -3,15 +3,20 @@
   user:
     name: pi
     password: "{{ password }}"
-  when: password is defined
+  when: password is defined and ansible_facts['os_family'] != "OpenWrt"
+
+- debug:
+    var: ansible_facts
 
 - name: Imposto hostname
   hostname:
     name: "{{ inventory_hostname }}"
+  when: ansible_facts['os_family'] != "OpenWrt"
 
 - name: Imposto timezone
   timezone:
       name: CET
+  when: ansible_facts['os_family'] != "OpenWrt"
 
 - name: Crea custom fact directory
   file:
@@ -23,6 +28,7 @@
     src: files/custom.fact
     dest: /etc/ansible/facts.d/custom.fact
     mode: 0755
+  when: ansible_facts['os_family'] != "OpenWrt"
 
 - name: Re-run setup to use custom facts
   setup: filter=ansible_local
@@ -50,6 +56,7 @@
     dest: /etc/sysctl.d/50-noipv6.conf
     mode: 0644
   notify: reload network
+  when: ansible_facts['os_family'] != "OpenWrt"
 
 - name: Creazione mountpoint per disco
   file: path=/mnt/HDD state=directory
@@ -71,3 +78,4 @@
     value: "15"
     backup: yes
   notify: reload systemd
+  when: ansible_facts['os_family'] != "OpenWrt"
