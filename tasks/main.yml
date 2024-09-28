@@ -79,3 +79,6 @@
     backup: yes
   notify: reload systemd
   when: ansible_facts['os_family'] != "OpenWrt"
+
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  ansible.builtin.meta: flush_handlers
