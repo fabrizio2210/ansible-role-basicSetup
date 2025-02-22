@@ -70,6 +70,16 @@
     state: mounted
   when: UUID_disk is defined
 
+- name: Leggi failure mode di /dev/sda2
+  shell: "tune2fs -l /dev/sda2 | grep Error"
+  register: sda2_failure_mode
+  changed_when: false
+  when: ansible_facts['os_family'] != "OpenWrt"
+
+- name: Imposta panic per la root in caso di failure
+  shell: "tune2fs -e panic /dev/sda2"
+  when: sda2_failure_mode.rc == 0 and "Panic" not in sda2_failure_mode.stdout
+
 - name: Enable systemd watchdog
   ini_file:
     path: /etc/systemd/system.conf
